@@ -23,8 +23,6 @@ export default function FruitBars(data) {
 		.domain([0, d3.max(data, (d) => d.count)])
 		.interpolator(d3.interpolateGreens);
 
-	// const svg = d3.create('svg').attr('width', width).attr('height', height);
-
 	const svg = d3
 		.create('svg')
 		.attr('width', width + margin.left + margin.right)
