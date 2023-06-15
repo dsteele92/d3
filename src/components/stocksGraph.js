@@ -1,22 +1,20 @@
 import * as d3 from 'd3';
 import { autoType } from 'd3-dsv';
 import { html } from 'htl';
-// import stocksData from '../data/stocksData.csv';
-// const d3 = require('d3-dsv');
 
 export default async function StocksGraph() {
 	let data;
-	await fetch('http://127.0.0.1:8080/data/stocksData.csv')
-		.then((response) => response.text())
-		.then((csvData) => {
-			data = d3.csvParse(csvData, autoType);
-			console.log(data); // Access the parsed CSV data
+	try {
+		const response = await fetch('http://127.0.0.1:8081/data/stocksData.csv');
+		const csvData = await response.text();
+		data = d3.csvParse(csvData, autoType);
+		// console.log(data);
+	} catch (error) {
+		console.log('Error loading the CSV file:', error);
+		const errorDiv = d3.create('div').text('Error loading the CSV file').attr('class', 'error');
 
-			// Continue with your data manipulation or visualization logic
-		})
-		.catch((error) => {
-			console.log('Error loading the CSV file:', error);
-		});
+		return errorDiv.node();
+	}
 
 	const container = d3.create('div').attr('class', 'container').attr('id', 'stocks-graph-container');
 
@@ -196,6 +194,21 @@ export default async function StocksGraph() {
 						});
 				});
 		});
+
+	// g.append('rect')
+	// 	.attr('class', 'overlay')
+	// 	.attr('width', width)
+	// 	.attr('height', height)
+	// 	.on('mouseover', () => tooltip.show())
+	// 	.on('mouseout', () => tooltip.hide())
+	// 	.on('mousemove', (event) => {
+	// 		const x0 = x.invert(d3.pointer(event)[0]);
+	// 		const i = d3.bisector((d) => d.date).left(data, x0, 1);
+	// 		const d0 = data[i - 1];
+	// 		const d1 = data[i];
+	// 		const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+	// 		tooltip.move(d);
+	// 	});
 
 	const updateYear = (xDomain) => {
 		const t = svg.transition().duration(750);
