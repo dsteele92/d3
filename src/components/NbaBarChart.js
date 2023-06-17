@@ -1,12 +1,11 @@
 import * as d3 from 'd3';
 import { autoType } from 'd3-dsv';
 import { html } from 'htl';
-import styles from '../stylesheets/barChartRace.module.css';
 
-export default async function BarChartRace() {
+export default async function NbaBarChart() {
 	let data;
 	try {
-		const response = await fetch('http://127.0.0.1:8081/data/nbaData.csv');
+		const response = await fetch('http://127.0.0.1:8080/data/nbaData.csv');
 		const csvData = await response.text();
 		data = d3.csvParse(csvData, autoType).filter((d) => d.Lg !== 'ABA');
 		console.log(data);
@@ -146,22 +145,35 @@ export default async function BarChartRace() {
 		// console.log(teamLogos[entry[0]].img);
 	});
 
-	const container = d3.create('div').attr('id', styles['bar-chart-container']);
+	// const width = '100%';
+	const height = 800;
 
-	const svg = d3.create('svg').attr('id', styles['nba-chart']);
+	const container = d3
+		.create('div')
+		.attr('id', 'bar-chart-container')
+		.style('width', '100%')
+		.style('height', '900px');
+	const svg = d3.create('svg').attr('id', 'nba-chart').attr('viewBox', [0, 0, 600, 900]).attr('width', '100%');
+	// set max width of svg
+	// get width and height of svg
+	// const width = svg.node().getBoundingClientRect().width;
+
+	// console.log(width);
 
 	svg.selectAll('rect')
 		.data(championsSorted)
 		.join('rect')
-		.attr('x', 30)
+		.attr('x', 40)
 		.attr('y', (d, i) => i * 40 + 1)
-		.attr('width', (d) => (d[1].length / 17) * 450)
+		.attr('width', (d) => `${(d[1].length / 17) * 90}%`)
 		.attr('height', 38)
-
+		// add id to each rectangle
+		.attr('class', 'champ-rect')
+		.attr('id', (d, i) => `champ-rect-${i}`)
+		.attr('rx', 5)
+		.attr('ry', 5)
+		.attr('opacity', 0.75)
 		// .attr('fill', (d) => teamLogos[d[0]].color)
-		// make opacity 0.6
-		.attr('opacity', 0.8)
-		// on hover change color
 		.on('mouseover', function (d) {
 			d3.select(this).attr('fill', (d) => teamLogos[d[0]].color);
 		})
@@ -169,17 +181,56 @@ export default async function BarChartRace() {
 			d3.select(this).attr('fill', '#000');
 		});
 
+	svg.selectAll('text')
+		.data(championsSorted)
+		.join('text')
+		.attr('x', 0)
+		.attr('y', (d, i) => i * 40 + 20)
+		.attr('dx', '50%')
+		.attr('dy', '0.35em')
+
+		.text((d) => `${d[0]} - ${d[1].length}`)
+		// add id of champion-text
+		.attr('class', 'champ-text')
+		.attr('id', (d, i) => `champ-text-${i}`)
+		.attr('opacity', 0)
+		// make width 100% of the svg
+		.attr('height', 38)
+		// center the text horizontally
+		.attr('text-anchor', 'middle');
+
 	// for each rectangle add images in porportion to the amount of championships
 	championsSorted.forEach((entry, key) => {
 		svg.append('g')
 			.selectAll('image')
 			.data(championsSorted[key][1])
 			.join('image')
-			.attr('href', `http://localhost:8081/content/lobtrophy.png`)
-			.attr('x', (d, i) => i * 25 + 35)
+			.attr('href', `http://localhost:8080/content/lobtrophy.png`)
+			.attr('x', (d, i) => i * 30 + 45)
 			.attr('y', key * 40 + 10)
 			.attr('width', 20)
 			.attr('height', 20);
+		if (championsSorted[key][1].length > 1) {
+			svg.append('text')
+				// append at the end of the rectangle
+				.attr('x', `${(championsSorted[key][1].length / 17) * 95}%`)
+				.attr('y', key * 40 + 20)
+				.attr('dx', championsSorted[key][1].length < 17 ? 50 : 23)
+				.attr('dy', '0.35em')
+				.text((d) => `${championsSorted[key][1].length}`)
+				// .attr('class', 'champ-text')
+				// .attr('id', (d, i) => `champ-text-${i}`)
+				// .attr('opacity', 0)
+				// fill white
+				.attr('fill', '#000')
+				// font size
+				.attr('font-size', '10px')
+				// font wei
+				.attr('font-weight', '100')
+				// italics
+				.attr('font-style', 'italic')
+				.attr('text-anchor', 'middle');
+		}
 	});
 
 	// add team logos to the bars
@@ -187,89 +238,38 @@ export default async function BarChartRace() {
 		.selectAll('image')
 		.data(championsSorted)
 		.join('image')
-		.attr('href', (d) => `http://localhost:8081/content/teamLogos/${teamLogos[d[0]].img}.png`)
+		.attr('href', (d) => `http://localhost:8080/content/teamLogos/${teamLogos[d[0]].img}.png`)
 		.attr('x', 0)
 		.attr('y', (d, i) => i * 40 + 10)
-		.attr('width', 20)
-		.attr('height', 20);
-
-	// add text to the bars
-	svg.selectAll('text')
-		.data(championsSorted)
-		.join('text')
-		.attr('x', 35)
-		.attr('y', (d, i) => i * 40 + 20)
-		.attr('dx', 5)
-		.attr('dy', '0.35em')
-		.text((d) => d[0])
-		// add id of champion-text
-		.attr('id', styles['champion-text'])
-		// make appear on hover
-		.attr('opacity', 0)
-		// add mouseover event
-		// LATER add tooltip *****
-		.on('mouseover', (event, d) => {
-			d3.select(event.currentTarget).attr('opacity', 1);
-		})
-		// add mouseout event
-		.on('mouseout', (event, d) => {
-			d3.select(event.currentTarget).attr('opacity', 0);
-		});
-
-	// svg.selectAll('div')
-	// 	.data(championsSorted)
-	// 	.join('g')
-	// 	.attr('x', 0)
-	// 	.attr('y', (d, i) => i * 40 + 1)
-	// 	.attr('width', '100%')
-	// 	.attr('height', 38)
-	// 	.attr('fill', 'red')
-	// 	// make red
-	// 	// .attr('pointer-events', 'none')
-	// 	// add mouseover event
-	// 	// LATER add tooltip *****
-	// 	.on('mouseover', (event, d, i) => {
-	// 		console.log('hi');
-	// 	});
-
-	// const tooltips = svg
-	// 	.append('g')
-	// 	.selectAll('div')
-	// 	.data(championsSorted)
-	// 	.join('rect')
-	// 	.attr('x', 30)
-	// 	.attr('y', (d, i) => i * 40 + 1)
-	// 	.attr('width', '100%')
-	// 	.attr('height', 38);
-	// opacity 0
-	// .style('pointer-events', 'none');
-	// .attr('opacity', 0)
-	// .attr('pointer-events', 'none');
-	// .attr('fill', 'none')
-
-	// on hover change color
-	// .on('mouseover', function (d) {
-	// 	// d3.select(this).attr('fill', (d) => teamLogos[d[0]].color);
-	// 	console.log(d);
-	// })
-	// .on('mouseout', function (d) {
-	// 	// d3.select(this).attr('fill', '#000');
-	// });
+		.attr('width', 30)
+		.attr('height', 30);
 
 	const tooltip = d3
 		.select(svg.node().parentNode)
 		.append('div')
-		.attr('class', styles.tooltip)
+		.attr('class', 'tooltip')
 		.style('opacity', 0)
 		.style('pointer-events', 'none'); // Add pointer-events: none
 
 	// Attach event listeners to the SVG
-	svg.on('mousemove', onMouseMove).on('mouseover', onMouseOver).on('mouseout', onMouseOut);
+	svg.on('mousemove', onMouseMove).on('mouseleave', onMouseOut);
 
 	// Event handler for mouse movement
 	function onMouseMove(event) {
 		const yPosition = d3.pointer(event)[1];
-		console.log(yPosition);
+		// console.log(yPosition);
+		const index = Math.floor(yPosition / 40);
+		console.log(index);
+		if (index > championsSorted.length - 1 || index < 0) {
+			d3.selectAll(`.champ-rect`).attr('fill', 'black');
+			d3.selectAll(`.champ-text`).attr('opacity', 0);
+			return;
+		}
+		// select element with id of champion-text
+		d3.selectAll(`.champ-rect`).attr('fill', 'black');
+		// d3.selectAll(`.champ-text`).attr('opacity', 0);
+		d3.select(`#champ-rect-${index}`).attr('fill', teamLogos[championsSorted[index][0]].color);
+		// d3.select(`#champ-text-${index}`).attr('opacity', 1);
 
 		// Update the tooltip position and text
 		tooltip
@@ -281,12 +281,14 @@ export default async function BarChartRace() {
 	// Event handler for mouse over
 	function onMouseOver() {
 		console.log('hi');
-		tooltip.transition().duration(200).style('opacity', 1);
+		// tooltip.transition().duration(200).style('opacity', 1);
 	}
 
 	// Event handler for mouse out
 	function onMouseOut() {
-		tooltip.transition().duration(200).style('opacity', 0);
+		// tooltip.transition().duration(200).style('opacity', 0);
+		d3.selectAll(`.champ-rect`).attr('fill', 'black');
+		d3.selectAll(`.champ-text`).attr('opacity', 0);
 	}
 
 	container.append(() => svg.node());

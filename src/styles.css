@@ -66,4 +66,33 @@ label {
     width: 100%;
 }
 
+/* ---------------NBA BAR CHART RACE------------------- */
+#bar-chart-container {
+    position: relative;
+    /* width: 100%; */
+    height: fit-content;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
 
+#nba-chart {
+    display: block;
+    /* width: 100%; */
+    max-width: 600px;
+    height: 900px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.champ-text {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1.5pt;
+    cursor: default;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    fill: grey;
+}
