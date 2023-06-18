@@ -3,12 +3,14 @@ import { autoType } from 'd3-dsv';
 import { html } from 'htl';
 
 export default async function* NbaBarChartRace() {
-	let data;
+	// -----------------------------GET AND PROCESS DATA--------------------------------
+
+	let championships;
 	try {
 		const response = await fetch('http://127.0.0.1:8080/data/nbaData.csv');
 		const csvData = await response.text();
-		data = d3.csvParse(csvData, autoType).filter((d) => d.Lg !== 'ABA');
-		console.log(data);
+		championships = d3.csvParse(csvData, autoType).filter((d) => d.Lg !== 'ABA');
+		console.log(championships);
 	} catch (error) {
 		console.log('Error loading the CSV file:', error);
 		const errorDiv = d3.create('div').text('Error loading the CSV file').attr('class', 'error');
@@ -136,12 +138,12 @@ export default async function* NbaBarChartRace() {
 	};
 
 	let keyframes = [];
-	for (let i = data.length - 1; i >= 0; i--) {
+	for (let i = championships.length - 1; i >= 0; i--) {
 		let current = [];
-		let currentYear = data[i].Year;
+		let currentYear = championships[i].Year;
 		current.push(currentYear);
-		let currentChampion = getName(data[i].Champion);
-		if (i < data.length - 1) {
+		let currentChampion = getName(championships[i].Champion);
+		if (i < championships.length - 1) {
 			const list = new Map(keyframes[keyframes.length - 1][1]);
 			if (list.has(currentChampion)) {
 				list.set(currentChampion, list.get(currentChampion) + 1);
@@ -163,23 +165,23 @@ export default async function* NbaBarChartRace() {
 	console.log(keyframes);
 
 	// group data by Champion and sort by amount of championships
-	const groupByChampion = d3.group(data, (d) => getName(d.Champion));
-	// console.log(groupByChampion);
-	const championsSorted = Array.from(groupByChampion).sort((a, b) => b[1].length - a[1].length);
-	// console.log(championsSorted);
+	// const groupByChampion = d3.group(championships, (d) => getName(d.Champion));
+	// const championsSorted = Array.from(groupByChampion).sort((a, b) => b[1].length - a[1].length);
 
-	// console.log(Array.from(keyframes[69][1]));
+	// -----------------------------CREATE SVG AND APPEND BARS, LOGOS, YEAR TRACKER, & TROPHIES--------------------------------
 
-	const svg = d3.create('svg').attr('id', 'nba-chart').attr('viewBox', [0, 0, 600, 900]).attr('width', '100%');
+	const svg = d3.create('svg').attr('id', 'nba-chart').attr('viewBox', [0, 0, 600, 900]);
 
-	let bars = svg.append('g').attr('fill-opacity', 1).attr('id', 'bars');
+	let bars = svg.append('g').attr('opacity', 0.9).attr('id', 'bars');
+	svg.append('text').attr('id', 'year');
 
-	svg.append('text').text('Year').attr('x', 450).attr('y', 800).attr('font-size', 40).attr('font-weight', 'bold');
-
-	function updateBars(keyframe, transition) {
+	function updateBars(keyframe, transition, currentTeam) {
 		let update = d3.select('#bars').selectAll('rect');
 
 		const data = Array.from(keyframe[1]);
+		// console.log(`data: ${data}`);
+
+		// console.log(`d[0][0]: ${data[0][0]}, currentTeam: ${currentTeam}`);
 
 		update
 			.data(data)
@@ -192,21 +194,22 @@ export default async function* NbaBarChartRace() {
 						.attr('y', (d, i) => i * 40 + 1)
 						.attr('width', (d) => `${(d[1] / 17) * 90}%`)
 						.attr('height', 38)
-						// add id to each rectangle
+						// .attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : 'grey'))
+						// using the class and ID for the tooltip
 						.attr('class', 'champ-rect')
 						.attr('id', (d, i) => `champ-rect-${i}`)
 						.attr('rx', 5)
 						.attr('ry', 5)
-						.attr('opacity', 0.75),
-				(update) => update,
-				(exit) => exit.transition(transition).remove().attr('width', 0).attr('opacity', 0)
+						.attr('opacity', 0.9),
+				(update) => update
+				// (exit) => exit.transition(transition).remove().attr('width', 0).attr('opacity', 0)
 			)
 			.call((update) =>
 				update
 					.transition(transition)
 					.attr('y', (d, i) => i * 40 + 1)
 					.attr('width', (d) => `${(d[1] / 17) * 90}%`)
-					.attr('opacity', 0.75)
+					.attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : 'grey'))
 			);
 	}
 
@@ -228,14 +231,14 @@ export default async function* NbaBarChartRace() {
 						// .attr('dy', '0.35em')
 						.attr('width', 30)
 						.attr('height', 30),
-				(update) => update,
-				(exit) =>
-					exit
-						.transition(transition)
+				(update) => update
+				// (exit) =>
+				// 	exit
+				// 		.transition(transition)
 
-						.remove()
-						.attr('width', 0)
-						.attr('opacity', 0)
+				// 		.remove()
+				// 		.attr('width', 0)
+				// 		.attr('opacity', 0)
 			)
 			.call((update) =>
 				update
@@ -248,35 +251,18 @@ export default async function* NbaBarChartRace() {
 	}
 
 	function updateYear(keyframe, transition) {
-		let update = d3.select('#bars').select('text');
-
+		let past = d3.select('#year');
 		const year = keyframe[0];
-		console.log(year);
-
-		// change the text of the year
-		// update
-		// 	.data(year)
-		// 	.update((update) => update.text(year)
-		// 	.call((update) => update.transition(transition).attr('opacity', 1));
+		past.remove();
+		const now = svg
+			.append('text')
+			.attr('id', 'year')
+			.text(year)
+			.attr('x', 450)
+			.attr('y', 800)
+			.attr('font-size', 40)
+			.attr('font-weight', 'bold');
 	}
-
-	// svg.selectAll('text')
-	// 	.data(championsSorted)
-	// 	.join('text')
-	// 	.attr('x', 0)
-	// 	.attr('y', (d, i) => i * 40 + 20)
-	// 	.attr('dx', '50%')
-	// 	.attr('dy', '0.35em')
-
-	// 	.text((d) => `${d[0]} - ${d[1].length}`)
-	// 	// add id of champion-text
-	// 	.attr('class', 'champ-text')
-	// 	.attr('id', (d, i) => `champ-text-${i}`)
-	// 	.attr('opacity', 0)
-	// 	// make width 100% of the svg
-	// 	.attr('height', 38)
-	// 	// center the text horizontally
-	// 	.attr('text-anchor', 'middle');
 
 	// for each rectangle add images in porportion to the amount of championships
 	// championsSorted.forEach((entry, key) => {
@@ -312,16 +298,7 @@ export default async function* NbaBarChartRace() {
 	// 	}
 	// });
 
-	// add team logos to the bars
-	// svg.append('g')
-	// 	.selectAll('image')
-	// 	.data(championsSorted)
-	// 	.join('image')
-	// 	.attr('href', (d) => `http://localhost:8080/content/teamLogos/${teamLogos[d[0]].img}.png`)
-	// 	.attr('x', 0)
-	// 	.attr('y', (d, i) => i * 40 + 10)
-	// 	.attr('width', 30)
-	// 	.attr('height', 30);
+	// -----------------------------TOOLTIPS--------------------------------
 
 	const tooltip = d3
 		.select(svg.node().parentNode)
@@ -370,20 +347,34 @@ export default async function* NbaBarChartRace() {
 		d3.selectAll(`.champ-text`).attr('opacity', 0);
 	}
 
-	// container.append(() => svg.node());
-
-	// append citation for Basketball Reference
+	// -----------------------------CALL GENERATOR FUNCTION ON KEYWORDS ARRAY--------------------------------
 
 	yield svg.node();
 
-	for (const keyframe of keyframes) {
-		// set timeout 500ms
-		await new Promise((resolve) => setTimeout(resolve, 500));
-		// update the data
-		const transition = svg.transition().duration(500).ease(d3.easeLinear);
+	// for (const keyframe of keyframes) {
+	// 	// set timeout 500ms
+	// 	await new Promise((resolve) => setTimeout(resolve, 500));
+	// 	// update the data
+	// 	const transition = svg.transition().duration(500).ease(d3.easeLinear);
 
-		updateBars(keyframe, transition);
-		updateLogos(keyframe, transition);
-		updateYear(keyframe, transition);
+	// 	updateBars(keyframe, transition);
+	// 	updateLogos(keyframe, transition);
+	// 	updateYear(keyframe, transition);
+	// }
+
+	for (let i = 0; i < keyframes.length; i++) {
+		await new Promise((resolve) => setTimeout(resolve, 450));
+		const transition = svg.transition().duration(450).ease(d3.easeLinear);
+		// const colorTransition = svg.transition().duration(250).ease(d3.easeLinear);
+
+		const current = championships[championships.length - 1 - i];
+		const currentTeam = getName(current.Champion);
+		// console.log(currentTeam);
+
+		updateBars(keyframes[i], transition, currentTeam);
+		updateLogos(keyframes[i], transition);
+		updateYear(keyframes[i], transition);
 	}
+
+	// append citation for Basketball Reference **********************************************************************************************************************
 }
