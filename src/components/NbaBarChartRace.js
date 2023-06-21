@@ -9,8 +9,11 @@ export default async function* NbaBarChartRace() {
 	try {
 		const response = await fetch('http://127.0.0.1:8080/data/nbaData.csv');
 		const csvData = await response.text();
-		championships = d3.csvParse(csvData, autoType).filter((d) => d.Lg !== 'ABA');
-		console.log(championships);
+		championships = d3
+			.csvParse(csvData, autoType)
+			.filter((d) => d.Lg !== 'ABA')
+			.reverse();
+		console.log('championships:', championships);
 	} catch (error) {
 		console.log('Error loading the CSV file:', error);
 		const errorDiv = d3.create('div').text('Error loading the CSV file').attr('class', 'error');
@@ -138,12 +141,13 @@ export default async function* NbaBarChartRace() {
 	};
 
 	let keyframes = [];
-	for (let i = championships.length - 1; i >= 0; i--) {
+	// for (let i = championships.length - 1; i >= 0; i--) {
+	for (let i = 0; i < championships.length - 1; i++) {
 		let current = [];
 		let currentYear = championships[i].Year;
 		current.push(currentYear);
 		let currentChampion = getName(championships[i].Champion);
-		if (i < championships.length - 1) {
+		if (i > 0) {
 			const list = new Map(keyframes[keyframes.length - 1][1]);
 			if (list.has(currentChampion)) {
 				list.set(currentChampion, list.get(currentChampion) + 1);
@@ -160,13 +164,16 @@ export default async function* NbaBarChartRace() {
 			list.set(currentChampion, 1);
 			current.push(list);
 		}
+
+		// gather data for specific championships
+		const currentChampionships = championships.slice(0, i + 1);
+		const championsGrouped = d3.group(currentChampionships, (d) => getName(d.Champion));
+		// const championsSorted = Array.from(championsGrouped).sort((a, b) => b[1].length - a[1].length);
+		// console.log('championsGrouped: ', championsGrouped);
+		current.push(championsGrouped);
 		keyframes.push(current);
 	}
-	console.log(keyframes);
-
-	// group data by Champion and sort by amount of championships
-	// const groupByChampion = d3.group(championships, (d) => getName(d.Champion));
-	// const championsSorted = Array.from(groupByChampion).sort((a, b) => b[1].length - a[1].length);
+	console.log('keyframes: ', keyframes);
 
 	// -----------------------------CREATE SVG AND APPEND BARS, LOGOS, YEAR TRACKER, & TROPHIES--------------------------------
 
@@ -179,9 +186,6 @@ export default async function* NbaBarChartRace() {
 		let update = d3.select('#bars').selectAll('rect');
 
 		const data = Array.from(keyframe[1]);
-		// console.log(`data: ${data}`);
-
-		// console.log(`d[0][0]: ${data[0][0]}, currentTeam: ${currentTeam}`);
 
 		update
 			.data(data)
@@ -201,8 +205,13 @@ export default async function* NbaBarChartRace() {
 						.attr('rx', 5)
 						.attr('ry', 5)
 						.attr('opacity', 0.9),
+				// .append('image')
+				// .attr('href', 'http://localhost:8080/content/lobtrophy.png') // Replace 'trophy-image.png' with the actual path to your trophy image
+				// .attr('x', (d) => d[1] * 30 + 45) // Adjust the positioning of the trophy image
+				// .attr('y', (d, i) => i * 40 + 1 + 5) // Adjust the positioning of the trophy image
+				// .attr('width', 20) // Adjust the size of the trophy image
+				// .attr('height', 20), // Adjust the size of the trophy image
 				(update) => update
-				// (exit) => exit.transition(transition).remove().attr('width', 0).attr('opacity', 0)
 			)
 			.call((update) =>
 				update
@@ -211,6 +220,29 @@ export default async function* NbaBarChartRace() {
 					.attr('width', (d) => `${(d[1] / 17) * 90}%`)
 					.attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : 'grey'))
 			);
+	}
+
+	function updateTrophies(keyframe, transition, currentTeam) {
+		// for each rectangle add images of trophies in porportion to the amount of championships
+		// 	let update = d3.select('#bars').selectAll('rect');
+		// 	const data = keyframe[2].get(getName(currentTeam));
+		// 	console.log(data);
+		// 	update
+		// 		// .selectAll('image')
+		// 		.data(data)
+		// 		.join(
+		// 			(enter) =>
+		// 				enter
+		// 					.append('image')
+		// 					.join('image')
+		// 					.attr('href', `http://localhost:8080/content/lobtrophy.png`)
+		// 					.attr('x', (d, i) => i * 30 + 45)
+		// 					// .attr('y', key * 40 + 10)
+		// 					.attr('width', 20)
+		// 					.attr('height', 20),
+		// 			(update) => update
+		// 		)
+		// 		.call((update) => update.transition(transition).attr('x', (d, i) => i * 30 + 45));
 	}
 
 	function updateLogos(keyframe, transition) {
@@ -336,7 +368,7 @@ export default async function* NbaBarChartRace() {
 
 	// Event handler for mouse over
 	function onMouseOver() {
-		console.log('hi');
+		// console.log('hi');
 		// tooltip.transition().duration(200).style('opacity', 1);
 	}
 
@@ -362,18 +394,26 @@ export default async function* NbaBarChartRace() {
 	// 	updateYear(keyframe, transition);
 	// }
 
-	for (let i = 0; i < keyframes.length; i++) {
+	for (let i = 0; i <= keyframes.length; i++) {
 		await new Promise((resolve) => setTimeout(resolve, 450));
 		const transition = svg.transition().duration(450).ease(d3.easeLinear);
 		// const colorTransition = svg.transition().duration(250).ease(d3.easeLinear);
 
-		const current = championships[championships.length - 1 - i];
+		if (i === keyframes.length) {
+			// this is to set all of the bars to the same color after the animation is finished
+			updateBars(keyframes[i - 1], transition, 'none');
+			return;
+		}
+
+		const current = championships[i];
 		const currentTeam = getName(current.Champion);
-		// console.log(currentTeam);
+		let last = null;
+		if (i === keyframes.length - 1) last = i;
 
 		updateBars(keyframes[i], transition, currentTeam);
 		updateLogos(keyframes[i], transition);
 		updateYear(keyframes[i], transition);
+		updateTrophies(keyframes[i], transition, currentTeam);
 	}
 
 	// append citation for Basketball Reference **********************************************************************************************************************
