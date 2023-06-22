@@ -40,7 +40,7 @@ export default async function* NbaBarChartRace() {
 		},
 		'San Antonio Spurs': {
 			img: 'spurs',
-			color: '#C4CED4',
+			color: '#3D3D3D',
 		},
 		'Minneapolis Lakers': {
 			img: 'lakers',
@@ -90,19 +90,19 @@ export default async function* NbaBarChartRace() {
 			img: 'mavericks',
 			color: '#00538C',
 		},
-		'Seattle SuperSonics': {
+		'Oklahoma City Thunder': {
 			img: 'thunder',
 			color: '#007AC1',
 		},
-		'Washington Bullets': {
-			img: 'bullets',
-			color: '#E31837',
+		'Washington Wizards': {
+			img: 'wizards',
+			color: '#192976',
 		},
 		'Portland Trail Blazers': {
 			img: 'blazers',
 			color: '#E03A3E',
 		},
-		'St. Louis Hawks': {
+		'Atlanta Hawks': {
 			img: 'hawks',
 			color: '#E03A3E',
 		},
@@ -124,17 +124,19 @@ export default async function* NbaBarChartRace() {
 		},
 	};
 
+	const barColor = '#918c80';
+
+	const names = new Map();
+	names.set('Minneapolis Lakers', 'Los Angeles Lakers');
+	names.set('Philadelphia Warriors', 'Golden State Warriors');
+	names.set('Syracuse Nationals', 'Philadelphia 76ers');
+	names.set('Rochester Royals', 'Sacramento Kings');
+	names.set('Seattle SuperSonics', 'Oklahoma City Thunder');
+	names.set('Washington Bullets', 'Washington Wizards');
+	names.set('St. Louis Hawks', 'Atlanta Hawks');
 	const getName = (team) => {
-		if (team === 'Minneapolis Lakers') {
-			return 'Los Angeles Lakers';
-		} else if (team === 'Philadelphia Warriors') {
-			return 'Golden State Warriors';
-		} else if (team === 'Syracuse Nationals') {
-			return 'Philadelphia 76ers';
-		} else if (team === 'Rochester Royals') {
-			return 'Sacramento Kings';
-		} else if (team === 'Seatle SuperSonics') {
-			return 'Oklahoma City Thunder';
+		if (names.has(team)) {
+			return names.get(team);
 		} else {
 			return team;
 		}
@@ -142,35 +144,17 @@ export default async function* NbaBarChartRace() {
 
 	let keyframes = [];
 	// for (let i = championships.length - 1; i >= 0; i--) {
-	for (let i = 0; i < championships.length - 1; i++) {
+	for (let i = 0; i < championships.length; i++) {
 		let current = [];
 		let currentYear = championships[i].Year;
-		current.push(currentYear);
-		let currentChampion = getName(championships[i].Champion);
-		if (i > 0) {
-			const list = new Map(keyframes[keyframes.length - 1][1]);
-			if (list.has(currentChampion)) {
-				list.set(currentChampion, list.get(currentChampion) + 1);
-				// sort list by amount of championships
-				list[Symbol.iterator] = function* () {
-					yield* [...this.entries()].sort((a, b) => b[1] - a[1]);
-				};
-			} else {
-				list.set(currentChampion, 1);
-			}
-			current.push(list);
-		} else {
-			const list = new Map();
-			list.set(currentChampion, 1);
-			current.push(list);
-		}
-
-		// gather data for specific championships
 		const currentChampionships = championships.slice(0, i + 1);
 		const championsGrouped = d3.group(currentChampionships, (d) => getName(d.Champion));
-		// const championsSorted = Array.from(championsGrouped).sort((a, b) => b[1].length - a[1].length);
-		// console.log('championsGrouped: ', championsGrouped);
-		current.push(championsGrouped);
+		const championsSorted = Array.from(championsGrouped).sort((a, b) => {
+			const lengthComp = b[1].length - a[1].length;
+			if (lengthComp !== 0) return lengthComp;
+			return b[1][b[1].length - 1].Year - a[1][a[1].length - 1].Year;
+		});
+		current.push(currentYear, championsSorted);
 		keyframes.push(current);
 	}
 	console.log('keyframes: ', keyframes);
@@ -185,7 +169,8 @@ export default async function* NbaBarChartRace() {
 	function updateBars(keyframe, transition, currentTeam) {
 		let update = d3.select('#bars').selectAll('rect');
 
-		const data = Array.from(keyframe[1]);
+		// const data = Array.from(keyframe[1]);
+		const data = keyframe[1];
 
 		update
 			.data(data)
@@ -196,53 +181,22 @@ export default async function* NbaBarChartRace() {
 						.join('rect')
 						.attr('x', 40)
 						.attr('y', (d, i) => i * 40 + 1)
-						.attr('width', (d) => `${(d[1] / 17) * 90}%`)
+						.attr('width', (d) => `${(d[1].length / 17) * 87}%`)
 						.attr('height', 38)
-						// .attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : 'grey'))
-						// using the class and ID for the tooltip
 						.attr('class', 'champ-rect')
 						.attr('id', (d, i) => `champ-rect-${i}`)
 						.attr('rx', 5)
 						.attr('ry', 5)
 						.attr('opacity', 0.9),
-				// .append('image')
-				// .attr('href', 'http://localhost:8080/content/lobtrophy.png') // Replace 'trophy-image.png' with the actual path to your trophy image
-				// .attr('x', (d) => d[1] * 30 + 45) // Adjust the positioning of the trophy image
-				// .attr('y', (d, i) => i * 40 + 1 + 5) // Adjust the positioning of the trophy image
-				// .attr('width', 20) // Adjust the size of the trophy image
-				// .attr('height', 20), // Adjust the size of the trophy image
 				(update) => update
 			)
 			.call((update) =>
 				update
 					.transition(transition)
 					.attr('y', (d, i) => i * 40 + 1)
-					.attr('width', (d) => `${(d[1] / 17) * 90}%`)
-					.attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : 'grey'))
+					.attr('width', (d) => `${(d[1].length / 17) * 87}%`)
+					.attr('fill', (d) => (d[0] === currentTeam ? teamLogos[d[0]].color : barColor))
 			);
-	}
-
-	function updateTrophies(keyframe, transition, currentTeam) {
-		// for each rectangle add images of trophies in porportion to the amount of championships
-		// 	let update = d3.select('#bars').selectAll('rect');
-		// 	const data = keyframe[2].get(getName(currentTeam));
-		// 	console.log(data);
-		// 	update
-		// 		// .selectAll('image')
-		// 		.data(data)
-		// 		.join(
-		// 			(enter) =>
-		// 				enter
-		// 					.append('image')
-		// 					.join('image')
-		// 					.attr('href', `http://localhost:8080/content/lobtrophy.png`)
-		// 					.attr('x', (d, i) => i * 30 + 45)
-		// 					// .attr('y', key * 40 + 10)
-		// 					.attr('width', 20)
-		// 					.attr('height', 20),
-		// 			(update) => update
-		// 		)
-		// 		.call((update) => update.transition(transition).attr('x', (d, i) => i * 30 + 45));
 	}
 
 	function updateLogos(keyframe, transition) {
@@ -264,13 +218,6 @@ export default async function* NbaBarChartRace() {
 						.attr('width', 30)
 						.attr('height', 30),
 				(update) => update
-				// (exit) =>
-				// 	exit
-				// 		.transition(transition)
-
-				// 		.remove()
-				// 		.attr('width', 0)
-				// 		.attr('opacity', 0)
 			)
 			.call((update) =>
 				update
@@ -282,126 +229,129 @@ export default async function* NbaBarChartRace() {
 			);
 	}
 
-	function updateYear(keyframe, transition) {
+	function updateYear(keyframe) {
 		let past = d3.select('#year');
 		const year = keyframe[0];
 		past.remove();
-		const now = svg
-			.append('text')
-			.attr('id', 'year')
-			.text(year)
-			.attr('x', 450)
-			.attr('y', 800)
-			.attr('font-size', 40)
-			.attr('font-weight', 'bold');
+		const now = svg.append('text').attr('id', 'year').text(year).attr('x', 350).attr('y', 750).attr('fill', 'grey');
 	}
 
 	// for each rectangle add images in porportion to the amount of championships
-	// championsSorted.forEach((entry, key) => {
-	// 	svg.append('g')
-	// 		.selectAll('image')
-	// 		.data(championsSorted[key][1])
-	// 		.join('image')
-	// 		.attr('href', `http://localhost:8080/content/lobtrophy.png`)
-	// 		.attr('x', (d, i) => i * 30 + 45)
-	// 		.attr('y', key * 40 + 10)
-	// 		.attr('width', 20)
-	// 		.attr('height', 20);
-	// 	if (championsSorted[key][1].length > 1) {
-	// 		svg.append('text')
-	// 			// append at the end of the rectangle
-	// 			.attr('x', `${(championsSorted[key][1].length / 17) * 95}%`)
-	// 			.attr('y', key * 40 + 20)
-	// 			.attr('dx', championsSorted[key][1].length < 17 ? 50 : 23)
-	// 			.attr('dy', '0.35em')
-	// 			.text((d) => `${championsSorted[key][1].length}`)
-	// 			// .attr('class', 'champ-text')
-	// 			// .attr('id', (d, i) => `champ-text-${i}`)
-	// 			// .attr('opacity', 0)
-	// 			// fill white
-	// 			.attr('fill', '#000')
-	// 			// font size
-	// 			.attr('font-size', '10px')
-	// 			// font wei
-	// 			.attr('font-weight', '100')
-	// 			// italics
-	// 			.attr('font-style', 'italic')
-	// 			.attr('text-anchor', 'middle');
-	// 	}
-	// });
+	const addTrophies = (keyframe, transition) => {
+		const data = keyframe[1];
+
+		const tooltip = d3
+			.select('body')
+			.append('div')
+			.attr('class', 'tooltip')
+			.style('position', 'absolute')
+			.style('visibility', 'hidden');
+
+		data.forEach((entry, key) => {
+			svg.append('g')
+				.selectAll('image')
+				.data(data[key][1])
+				.join('image')
+				.attr('href', `http://localhost:8080/content/lobtrophy.png`)
+				.attr('x', (d, i) => i * 30 + 45)
+				.attr('y', key * 40 + 30)
+				.attr('width', 25)
+				.attr('height', 25)
+				.attr('opacity', 0)
+				.style('cursor', 'pointer')
+				.on('mouseover', function (d, data) {
+					d3.select(this).attr('opacity', 0.7); // Reduce opacity on mouseover
+					tooltip
+						.style('visibility', 'visible') // Show tooltip on mouseover
+						// .text(data.Year)
+						.style('left', `${event.pageX}px`) // Position tooltip relative to mouse cursor
+						.style('top', `${event.pageY + 15}px`)
+						// append an h4 tag with the year
+						.append('h4')
+						.text(data.Year)
+						// .style('font-style', 'italic')
+						.append('h4')
+						.text(data.Champion)
+						.style('font-weight', 'bold')
+						.append('h4')
+						.text(`Finals MVP: ${data['Finals MVP'] ? data['Finals MVP'] : 'N/A'}`)
+						.append('h4')
+						.text(`Runner-up: ${data['Runner-Up']}`);
+				})
+				.on('mouseout', function () {
+					d3.select(this).attr('opacity', 1); // Restore opacity on mouseout
+					tooltip.style('visibility', 'hidden'); // Hide tooltip on mouseout
+					// remove all h4 tags
+					tooltip.selectAll('h4').remove();
+				})
+				.transition(transition)
+				.attr('opacity', 1)
+				.attr('y', key * 40 + 8);
+		});
+	};
 
 	// -----------------------------TOOLTIPS--------------------------------
 
-	const tooltip = d3
-		.select(svg.node().parentNode)
-		.append('div')
-		.attr('class', 'tooltip')
-		.style('opacity', 0)
-		.style('pointer-events', 'none'); // Add pointer-events: none
+	const addTooltips = (keyframe) => {
+		const container = d3.select('#bar-chart-container');
+		const svg = d3.select('#nba-chart');
+		const data = keyframe[1];
 
-	// Attach event listeners to the SVG
-	// svg.on('mousemove', onMouseMove).on('mouseleave', onMouseOut);
+		const infoDisplay = svg
+			.append('text')
+			.attr('id', 'info-display')
+			.attr('x', 400)
+			.attr('y', 550)
+			.text('')
+			.attr('text-anchor', 'middle');
 
-	// Event handler for mouse movement
-	function onMouseMove(event) {
-		const yPosition = d3.pointer(event)[1];
-		// console.log(yPosition);
-		const index = Math.floor(yPosition / 40);
-		// console.log(index);
-		if (index > championsSorted.length - 1 || index < 0) {
-			d3.selectAll(`.champ-rect`).attr('fill', 'black');
-			d3.selectAll(`.champ-text`).attr('opacity', 0);
-			return;
+		const infoDisplay2 = svg
+			.append('text')
+			.attr('id', 'info-display-2')
+			.attr('x', 400)
+			.attr('y', 575)
+			.text('')
+			.attr('text-anchor', 'middle');
+
+		// Attach event listeners
+		container.on('mousemove', onMouseMove).on('mouseleave', onMouseOut);
+
+		// Event handler for mouse movement
+		function onMouseMove(event) {
+			const yPosition = d3.pointer(event)[1];
+			// 20px for the padding
+			const index = Math.floor((yPosition - 20) / 40);
+			if (index > data.length - 1 || index < 0) {
+				d3.selectAll(`.champ-rect`).attr('fill', barColor);
+				// d3.selectAll(`.champ-text`).attr('opacity', 0);
+				infoDisplay.text('');
+				infoDisplay2.text('');
+				return;
+			}
+			d3.selectAll(`.champ-rect`).attr('fill', barColor);
+			d3.select(`#champ-rect-${index}`).attr('fill', teamLogos[data[index][0]].color);
+			infoDisplay.text(getName(data[index][0])).attr('fill', teamLogos[data[index][0]].color);
+			infoDisplay2.text(`Championships: ${data[index][1].length}`);
 		}
-		// select element with id of champion-text
-		d3.selectAll(`.champ-rect`).attr('fill', 'black');
-		// d3.selectAll(`.champ-text`).attr('opacity', 0);
-		d3.select(`#champ-rect-${index}`).attr('fill', teamLogos[championsSorted[index][0]].color);
-		// d3.select(`#champ-text-${index}`).attr('opacity', 1);
 
-		// Update the tooltip position and text
-		tooltip
-			.style('left', event.pageX + 10 + 'px')
-			.style('top', event.pageY + 10 + 'px')
-			.text('Y Position: ' + yPosition);
-	}
-
-	// Event handler for mouse over
-	function onMouseOver() {
-		// console.log('hi');
-		// tooltip.transition().duration(200).style('opacity', 1);
-	}
-
-	// Event handler for mouse out
-	function onMouseOut() {
-		// tooltip.transition().duration(200).style('opacity', 0);
-		d3.selectAll(`.champ-rect`).attr('fill', 'black');
-		d3.selectAll(`.champ-text`).attr('opacity', 0);
-	}
+		function onMouseOut() {
+			d3.selectAll(`.champ-rect`).attr('fill', barColor);
+		}
+	};
 
 	// -----------------------------CALL GENERATOR FUNCTION ON KEYWORDS ARRAY--------------------------------
 
 	yield svg.node();
 
-	// for (const keyframe of keyframes) {
-	// 	// set timeout 500ms
-	// 	await new Promise((resolve) => setTimeout(resolve, 500));
-	// 	// update the data
-	// 	const transition = svg.transition().duration(500).ease(d3.easeLinear);
-
-	// 	updateBars(keyframe, transition);
-	// 	updateLogos(keyframe, transition);
-	// 	updateYear(keyframe, transition);
-	// }
-
 	for (let i = 0; i <= keyframes.length; i++) {
-		await new Promise((resolve) => setTimeout(resolve, 450));
-		const transition = svg.transition().duration(450).ease(d3.easeLinear);
-		// const colorTransition = svg.transition().duration(250).ease(d3.easeLinear);
+		await new Promise((resolve) => setTimeout(resolve, 400));
+		const transition = svg.transition().duration(400).ease(d3.easeLinear);
 
 		if (i === keyframes.length) {
 			// this is to set all of the bars to the same color after the animation is finished
 			updateBars(keyframes[i - 1], transition, 'none');
+			addTrophies(keyframes[i - 1], transition);
+			addTooltips(keyframes[i - 1]);
 			return;
 		}
 
@@ -412,8 +362,7 @@ export default async function* NbaBarChartRace() {
 
 		updateBars(keyframes[i], transition, currentTeam);
 		updateLogos(keyframes[i], transition);
-		updateYear(keyframes[i], transition);
-		updateTrophies(keyframes[i], transition, currentTeam);
+		updateYear(keyframes[i]);
 	}
 
 	// append citation for Basketball Reference **********************************************************************************************************************
