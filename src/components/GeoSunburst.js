@@ -197,8 +197,8 @@ export default async function GeoSunburst() {
 		path.on('mouseover', function (e, d) {
 			if (d.data.name === 'cont...') return;
 			d3.select(this).attr('opacity', 0.9); // Reduce opacity on mouseover
-			console.log(d);
-			console.log(d.data);
+			// console.log(d);
+			// console.log(d.data);
 			tooltip
 				.style('visibility', 'visible') // Show tooltip on mouseover
 				.style('left', `${event.pageX}px`) // Position tooltip relative to mouse cursor
@@ -242,6 +242,7 @@ export default async function GeoSunburst() {
 			.attr('r', radius)
 			.attr('fill', 'none')
 			.attr('pointer-events', 'all')
+			.attr('id', 'center-circle')
 			.on('click', clicked);
 
 		function clicked(event, p) {
@@ -282,6 +283,13 @@ export default async function GeoSunburst() {
 				.transition(t)
 				.attr('fill-opacity', (d) => +labelVisible(d.target))
 				.attrTween('transform', (d) => () => labelTransform(d.current));
+
+			const center = document.getElementById('center-circle');
+			if (p.data.name !== 'world') {
+				center.classList.add('back-cursor');
+			} else {
+				center.classList.remove('back-cursor');
+			}
 		}
 
 		function arcVisible(d) {
@@ -306,9 +314,12 @@ export default async function GeoSunburst() {
 	const chartContainer = document.createElement('div');
 	chartContainer.setAttribute('id', 'geo-chart-container');
 
+	const sortLabel = document.createElement('h4');
+	sortLabel.setAttribute('class', 'label');
+	sortLabel.setAttribute('id', 'sort-label');
+	sortLabel.innerText = 'Sort by: ';
 	const sortSelect = document.createElement('select');
 	sortSelect.setAttribute('id', 'sort-select');
-	sortSelect.setAttribute('class', 'sort-select');
 	sortSelect.innerHTML = `
     <option value="Population">Population</option>
     <option value="Area (sq km)">Area (sq km)</option>
@@ -329,6 +340,7 @@ export default async function GeoSunburst() {
 			chartContainer.appendChild(chartNode);
 		}
 	});
+	mainContainer.appendChild(sortLabel);
 	mainContainer.appendChild(sortSelect);
 
 	let sunburst = chart();
