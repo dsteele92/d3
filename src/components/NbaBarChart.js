@@ -5,7 +5,7 @@ import { html } from 'htl';
 export default async function NbaBarChart() {
 	let data;
 	try {
-		const response = await fetch('http://127.0.0.1:8080/data/nbaData.csv');
+		const response = await fetch('http://127.0.0.1:8081/data/nbaData.csv');
 		const csvData = await response.text();
 		data = d3.csvParse(csvData, autoType).filter((d) => d.Lg !== 'ABA');
 		console.log(data);
@@ -205,7 +205,7 @@ export default async function NbaBarChart() {
 			.selectAll('image')
 			.data(championsSorted[key][1])
 			.join('image')
-			.attr('href', `http://localhost:8080/content/lobtrophy.png`)
+			.attr('href', `http://localhost:8081/content/lobtrophy.png`)
 			.attr('x', (d, i) => i * 30 + 45)
 			.attr('y', key * 40 + 10)
 			.attr('width', 20)
@@ -238,7 +238,7 @@ export default async function NbaBarChart() {
 		.selectAll('image')
 		.data(championsSorted)
 		.join('image')
-		.attr('href', (d) => `http://localhost:8080/content/teamLogos/${teamLogos[d[0]].img}.png`)
+		.attr('href', (d) => `http://localhost:8081/content/teamLogos/${teamLogos[d[0]].img}.png`)
 		.attr('x', 0)
 		.attr('y', (d, i) => i * 40 + 10)
 		.attr('width', 30)
