@@ -136,7 +136,7 @@ export default async function GeoSunburst() {
 		return d3.partition().size([2 * Math.PI, root.height + 1])(root);
 	};
 
-	const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, dataPop.children.length + 1));
+	const color = d3.scaleOrdinal(d3.quantize(d3.interpolateSpectral, dataPop.children.length + 1));
 	const format = d3.format(',d');
 	const width = 1000;
 	const radius = 155.33333333333334;
@@ -181,7 +181,7 @@ export default async function GeoSunburst() {
 				// return 'red';
 				return color(d.data.name);
 			})
-			.attr('fill-opacity', (d) => (arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0))
+			.attr('fill-opacity', (d) => (arcVisible(d.current) ? (d.children ? 0.8 : 0.6) : 0))
 			.attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
 
 			.attr('d', (d) => arc(d.current));
