@@ -181,7 +181,7 @@ export default async function GeoSunburst() {
 				// return 'red';
 				return color(d.data.name);
 			})
-			.attr('fill-opacity', (d) => (arcVisible(d.current) ? (d.children ? 0.8 : 0.6) : 0))
+			.attr('fill-opacity', (d) => (arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0))
 			.attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
 
 			.attr('d', (d) => arc(d.current));
