@@ -19,8 +19,8 @@ const slider = CircleSlider();
 const arc = Arc(fruitsData);
 
 const dinoTree = await DinosaurTree();
-const geoSunburst = await GeoSunburst();
-const nba = await NbaBarChartRace();
+// const geoSunburst = await GeoSunburst();
+// const nba = await NbaBarChartRace();
 
 // document.body.appendChild(geoSunburst);
 // document.body.appendChild(stocks);

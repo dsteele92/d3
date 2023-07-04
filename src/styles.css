@@ -309,3 +309,8 @@ h4 {
     cursor: url('./content/back.png'), auto;
     /* cursor: pointer; */
 }
+
+/* ------------------------------DINO TREE------------------------------ */
+.node-text {
+    font-style: italic
+}

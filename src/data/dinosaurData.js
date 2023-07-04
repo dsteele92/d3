@@ -1,24 +1,29 @@
 export default {
 	name: '',
+	clade: 'Dinosauriformes',
 	children: [
-		{ name: 'Euparkeria', index: '-2' },
-		{ name: 'Postosuchus', index: '-1' },
+		{ name: 'Euparkeria', year: -245 },
+		{ name: 'Postosuchus', year: -225 },
 		{
 			name: '',
+			clade: 'Dinosauriformes',
 			children: [
 				{
 					name: '',
+					clade: 'Dinosauriformes',
 					children: [
-						{ name: 'Lagerpeton', index: 0 },
+						{ name: 'Lagerpeton', year: -230 },
 						{
 							name: '',
+							clade: 'Dinosauriformes',
 							children: [
-								{ name: 'Dromomeron romerii', index: 1 },
+								{ name: 'Dromomeron romerii', year: -210 },
 								{
 									name: '',
+									clade: 'Dinosauriformes',
 									children: [
-										{ name: 'Dromomeron gregorii', index: 2 },
-										{ name: 'Dromomeron gigas', index: 3 },
+										{ name: 'Dromomeron gregorii', year: -210 },
+										{ name: 'Dromomeron gigas', year: -210 },
 									],
 								},
 							],
@@ -27,44 +32,53 @@ export default {
 				},
 				{
 					name: '',
+					clade: 'Dinosauriformes',
 					children: [
-						{ name: 'Marasuchus', index: 4 },
+						{ name: 'Marasuchus', year: -230 },
 						{
 							name: '',
+							clade: 'Dinosauriformes',
 							children: [
-								{ name: 'Saltopus', index: 5 },
+								{ name: 'Saltopus', year: -225 },
 								{
 									name: '',
+									clade: 'Dinosauriformes',
 									children: [
-										{ name: 'Agnosphitys', index: 6 },
-										{ name: 'Lewisuchus/Pseudolagosuchus', index: 7 },
+										{ name: 'Agnosphitys', year: -210 },
+										{ name: 'Lewisuchus/Pseudolagosuchus', year: -230 },
 										{
 											name: '',
+											clade: 'Dinosauriformes',
 											children: [
 												{
 													name: '',
+													clade: 'Dinosauriformes',
 													children: [
-														{ name: 'Asilisaurus', index: 8 },
-														{ name: 'Ignotosaurus', index: 9 },
+														{ name: 'Asilisaurus', year: -240 },
+														{ name: 'Ignotosaurus', year: -225 },
 													],
 												},
 												{
 													name: '',
+													clade: 'Dinosauriformes',
 													children: [
-														{ name: 'Sacisaurus', index: 10 },
+														{ name: 'Sacisaurus', year: -215 },
 														{
 															name: '',
+															clade: 'Dinosauriformes',
 															children: [
-																{ name: 'Diodorus', index: 11 },
+																{ name: 'Diodorus', year: -225 },
 																{
 																	name: '',
+																	clade: 'Dinosauriformes',
 																	children: [
-																		{ name: 'Eucoelophysis', index: 12 },
+																		{ name: 'Eucoelophysis', year: -215 },
 																		{
 																			name: '',
+																			clade: 'Dinosauriformes',
 																			children: [
-																				{ name: 'Silesaurus', index: 13 },
-																				{ name: 'Lutungutali', index: 14 },
+																				{ name: 'Silesaurus', year: -215 },
+																				{ name: 'Lutungutali', year: -240 },
 																			],
 																		},
 																	],
@@ -79,23 +93,28 @@ export default {
 								},
 								{
 									name: '',
+									clade: 'Dinosauria',
 									children: [
 										{
 											name: '',
+											clade: 'Saurischia',
 											children: [
 												{
 													name: '',
+													clade: 'Saurischia',
 													children: [
-														{ name: 'Staurikosaurus', index: 15 },
+														{ name: 'Staurikosaurus', year: -225 },
 														{
 															name: '',
+															clade: 'Saurischia',
 															children: [
-																{ name: 'Herrerasaurus', index: 16 },
+																{ name: 'Herrerasaurus', year: -225 },
 																{
 																	name: '',
+																	clade: 'Saurischia',
 																	children: [
-																		{ name: 'Chindesaurus', index: 17 },
-																		{ name: 'Sanjuansaurus', index: 18 },
+																		{ name: 'Chindesaurus', year: -215 },
+																		{ name: 'Sanjuansaurus', year: -225 },
 																	],
 																},
 															],
@@ -104,102 +123,114 @@ export default {
 												},
 												{
 													name: '',
+													clade: 'Saurischia',
 													children: [
-														{ name: 'Saturnalia', index: 19 },
-														{ name: 'Pampadromaeus', index: 20 },
+														{ name: 'Saturnalia', year: -235 },
+														{ name: 'Pampadromaeus', year: -235 },
 														{
 															name: '',
+															clade: 'Saurischia',
 															children: [
-																{ name: 'Guaibasaurus', index: 21 },
-																{ name: 'Panphagia', index: 22 },
-																{ name: 'Efraasia', index: 23 },
-																{ name: 'Pantydraco', index: 24 },
-																{ name: 'Thecodontosaurus', index: 25 },
+																{ name: 'Guaibasaurus', year: -225 },
+																{ name: 'Panphagia', year: -235 },
+																{ name: 'Efraasia', year: -215 },
+																{ name: 'Pantydraco', year: -215 },
+																{ name: 'Thecodontosaurus', year: -210 },
 																{
 																	name: '',
+																	clade: 'Saurischia',
 																	children: [
 																		{
 																			name: '',
+																			clade: 'Saurischia',
 																			children: [
-																				{ name: 'Plateosaurus', index: 26 },
-																				{ name: 'Unaysaurus', index: 27 },
+																				{ name: 'Plateosaurus', year: -215 },
+																				{ name: 'Unaysaurus', year: -215 },
 																			],
 																		},
 																		{
 																			name: '',
+																			clade: 'Saurischia',
 																			children: [
-																				{ name: 'Lufengosaurus', index: 28 },
+																				{ name: 'Lufengosaurus', year: -205 },
 																				{
 																					name: '',
+																					clade: 'Saurischia',
 																					children: [
 																						{
 																							name: 'Coloradisaurus',
-																							index: 29,
+																							year: -210,
 																						},
 																						{
 																							name: '',
+																							clade: 'Saurischia',
 																							children: [
 																								{
 																									name: 'Yunnanosaurus',
-																									index: 30,
+																									year: -195,
 																								},
 																								{
 																									name: '',
+																									clade: 'Saurischia',
 																									children: [
 																										{
 																											name: 'Massospondylus carinatus',
-																											index: 31,
+																											year: -200,
 																										},
 																										{
 																											name: 'Massospondylus kaalea',
-																											index: 32,
+																											year: -200,
 																										},
 																										{
 																											name: 'Leyesaurus',
-																											index: 33,
+																											year: -200,
 																										},
 																										{
 																											name: '',
+																											clade: 'Saurischia',
 																											children: [
 																												{
 																													name: 'Riojasaurus',
-																													index: 34,
+																													year: -215,
 																												},
 																												{
 																													name: '',
+																													clade: 'Saurischia',
 																													children:
 																														[
 																															{
 																																name: 'Aardonyx',
-																																index: 35,
+																																year: -200,
 																															},
 																															{
 																																name: 'Pulanesaura',
-																																index: 36,
+																																year: -200,
 																															},
 																															{
 																																name: '',
+																																clade: 'Saurischia',
 																																children:
 																																	[
 																																		{
 																																			name: 'Antetonitrus',
-																																			index: 37,
+																																			year: -200,
 																																		},
 																																		{
 																																			name: 'Gongxianosaurus',
-																																			index: 38,
+																																			year: -175,
 																																		},
 																																		{
 																																			name: '',
+																																			clade: 'Saurischia',
 																																			children:
 																																				[
 																																					{
 																																						name: 'Tazoudasaurus',
-																																						index: 39,
+																																						year: -190,
 																																					},
 																																					{
 																																						name: 'Vulcanodon',
-																																						index: 40,
+																																						year: -205,
 																																					},
 																																				],
 																																		},
@@ -227,33 +258,42 @@ export default {
 										},
 										{
 											name: '',
+											clade: 'Ornithoscelida',
 											children: [
 												{
 													name: '',
+													clade: 'Ornithischia',
 													children: [
-														{ name: 'Pisanosaurus', index: 41 },
+														{ name: 'Pisanosaurus', year: -225 },
 														{
 															name: '',
+															clade: 'Ornithischia',
 															children: [
 																{
 																	name: '',
+																	clade: 'Ornithischia',
 																	children: [
-																		{ name: 'Tianyulong', index: 42 },
+																		{ name: 'Tianyulong', year: -160 },
 																		{
 																			name: '',
+																			clade: 'Ornithischia',
 																			children: [
-																				{ name: 'Fruitadens', index: 43 },
+																				{ name: 'Fruitadens', year: -150 },
 																				{
 																					name: '',
+																					clade: 'Ornithischia',
 																					children: [
-																						{ name: 'Manidens', index: 44 },
+																						{
+																							name: 'Manidens',
+																							year: -170,
+																						},
 																						{
 																							name: 'Abrictosaurus',
-																							index: 45,
+																							year: -200,
 																						},
 																						{
 																							name: 'Heterodontosaurus',
-																							index: 46,
+																							year: -200,
 																						},
 																					],
 																				},
@@ -263,28 +303,32 @@ export default {
 																},
 																{
 																	name: '',
+																	clade: 'Ornithischia',
 																	children: [
-																		{ name: 'Eocursor', index: 47 },
+																		{ name: 'Eocursor', year: -215 },
 																		{
 																			name: '',
+																			clade: 'Ornithischia',
 																			children: [
 																				{
 																					name: '',
+																					clade: 'Ornithischia',
 																					children: [
 																						{
 																							name: 'Agilisaurus',
-																							index: 48,
+																							year: -170,
 																						},
 																						{
 																							name: '',
+																							clade: 'Ornithischia',
 																							children: [
 																								{
 																									name: 'Hexinlusaurus',
-																									index: 49,
+																									year: -170,
 																								},
 																								{
 																									name: 'Jeholosaurus',
-																									index: 50,
+																									year: -120,
 																								},
 																							],
 																						},
@@ -292,28 +336,31 @@ export default {
 																				},
 																				{
 																					name: '',
+																					clade: 'Ornithischia',
 																					children: [
 																						{
 																							name: 'Lesothosaurus',
-																							index: 51,
+																							year: -200,
 																						},
 																						{
 																							name: '',
+																							clade: 'Ornithischia',
 																							children: [
 																								{
 																									name: 'Laquintasaura',
-																									index: 52,
+																									year: -200,
 																								},
 																								{
 																									name: '',
+																									clade: 'Ornithischia',
 																									children: [
 																										{
 																											name: 'Scelidosaurus',
-																											index: 53,
+																											year: -195,
 																										},
 																										{
 																											name: 'Emausaurus',
-																											index: 54,
+																											year: -175,
 																										},
 																									],
 																								},
@@ -331,72 +378,81 @@ export default {
 												},
 												{
 													name: '',
+													clade: 'Therapoda',
 													children: [
-														{ name: 'Eoraptor', index: 55 },
+														{ name: 'Eoraptor', year: -225 },
 														{
 															name: '',
+															clade: 'Therapoda',
 															children: [
-																{ name: 'Eodromaeus', index: 56 },
-																{ name: 'Tawa', index: 57 },
+																{ name: 'Eodromaeus', year: -225 },
+																{ name: 'Tawa', year: -215 },
 																{
 																	name: '',
+																	clade: 'Therapoda',
 																	children: [
-																		{ name: 'Liliensternus', index: 58 },
+																		{ name: 'Liliensternus', year: -208 },
 																		{
 																			name: '',
+																			clade: 'Therapoda',
 																			children: [
 																				{
 																					name: '',
+																					clade: 'Therapoda',
 																					children: [
 																						{
 																							name: 'Dracoraptor',
-																							index: 59,
+																							year: -200,
 																						},
 																						{
 																							name: 'Dilophosaurus',
-																							index: 60,
+																							year: -190,
 																						},
 																						{
 																							name: 'Dracovenator',
-																							index: 61,
+																							year: -200,
 																						},
 																						{
 																							name: 'Sarcosaurus',
-																							index: 62,
+																							year: -195,
 																						},
 																						{
 																							name: 'Zupaysaurus',
-																							index: 63,
+																							year: -208,
 																						},
 																					],
 																				},
 																				{
 																					name: '',
+																					clade: 'Therapoda',
 																					children: [
 																						{
 																							name: 'Panguraptor',
-																							index: 64,
+																							year: -200,
 																						},
 																						{
 																							name: '',
+																							clade: 'Therapoda',
 																							children: [
 																								{
 																									name: '',
+																									clade: 'Therapoda',
 																									children: [
 																										{
 																											name: 'Procompsognathus',
-																											index: 65,
+																											year: -215,
 																										},
 																										{
 																											name: '',
+																											clade: 'Therapoda',
 																											children: [
 																												{
 																													name: 'Coelophysis',
-																													index: 66,
+																													year: -210,
 																												},
 																												{
 																													name: 'Syntarsus',
-																													index: 67,
+																													year: -195,
 																												},
 																											],
 																										},
@@ -404,18 +460,19 @@ export default {
 																								},
 																								{
 																									name: '',
+																									clade: 'Therapoda',
 																									children: [
 																										{
 																											name: 'Cryolophosaurus',
-																											index: 68,
+																											year: -190,
 																										},
 																										{
 																											name: 'Sinosaurus',
-																											index: 69,
+																											year: -200,
 																										},
 																										{
 																											name: 'Lophostropheus',
-																											index: 70,
+																											year: -200,
 																										},
 																									],
 																								},
