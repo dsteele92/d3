@@ -92,9 +92,11 @@ export default async function DinosaurTree() {
 
 		// Compute the adjusted height of the tree.
 		const height = x1 - x0 + dx * 2;
+		console.log(height);
 
 		const svg = d3
 			.create('svg')
+			.attr('id', 'dino-svg')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top + margin.bottom);
 
@@ -279,7 +281,6 @@ export default async function DinosaurTree() {
 					for (let i = 1; i < ancestors.length; i++) {
 						const parent = ancestors[i].data.nodeIndex;
 						const child = ancestors[i - 1].data.nodeIndex;
-						console.log(`#path-${parent}-${child}`);
 						d3.select(`#path-${parent}-${child}`).attr('stroke-width', 3);
 					}
 				}
@@ -347,7 +348,6 @@ export default async function DinosaurTree() {
 					for (let i = 1; i < ancestors.length; i++) {
 						const parent = ancestors[i].data.nodeIndex;
 						const child = ancestors[i - 1].data.nodeIndex;
-						console.log(`#path-${parent}-${child}`);
 						d3.select(`#path-${parent}-${child}`).attr('stroke-width', 3);
 					}
 				}
@@ -405,18 +405,72 @@ export default async function DinosaurTree() {
 			.attr('stroke-width', 1)
 			.attr('pointer-events', 'none');
 
+		const clades = ['Dinosauriformes', 'Saurischia', 'Ornithischia', 'Therapoda'];
+
+		const keyContainer = svg
+			.append('g')
+			// .attr('x', width * 0.75)
+			// .attr('y', height * 0.25)
+			.attr('class', 'key-container')
+			.attr('transform', `translate(${width * 0.75},${height * 0.25})`)
+			.attr('height', 70)
+			.attr('width', width * 0.25)
+			.attr('pointer-events', 'none');
+
+		const key = keyContainer
+			.selectAll('text')
+			.data(clades)
+			.enter()
+			.append('text')
+			.attr('class', 'key')
+			.text((d) => d)
+			.attr('x', 30)
+			.attr('y', (d, i) => i * 20);
+
+		const keyColors = keyContainer
+			.selectAll('rect')
+			.data(clades)
+			.enter()
+			.append('rect')
+			.attr('height', 10)
+			.attr('width', 10)
+			.attr('rx', 2)
+			.attr('ry', 2)
+			.attr('x', 10)
+			.attr('y', (d, i) => i * 20 - 10)
+			.attr('fill', (d) => {
+				if (d === 'Saurischia') {
+					return '#569e6c';
+				} else if (d === 'Ornithischia') {
+					return '#457aba';
+				} else if (d === 'Therapoda') {
+					return '#bd5757';
+				} else {
+					return '#6b6b6b';
+				}
+			});
+
+		const keyBorder = keyContainer
+			.append('rect')
+			.attr('height', 100)
+			.attr('width', 175)
+			.attr('x', -5)
+			.attr('y', -25)
+			.attr('fill', 'none')
+			.attr('stroke', 'grey')
+			.attr('stroke-width', 1)
+			// make border radius 10
+			.attr('rx', 10)
+			.attr('ry', 10)
+			.attr('pointer-events', 'none');
+
 		// -----------------------------TOOLTIPS--------------------------------
 
-		// const addTooltips = () => {
-		// const container = d3.select('#dino-tree');
 		const tooltipContainer = svg
 			.append('foreignObject')
 			.attr('id', 'toooltip-container')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top);
-		// .attr('viewBox', [-dy / 3, x0 - dx, width, height])
-		// .attr('transform', `translate(${margin.left},${margin.top})`);
-		// .attr('pointer-events', 'none');
 
 		tooltipContainer.on('mousemove', onMouseMove).on('mouseleave', onMouseLeave);
 

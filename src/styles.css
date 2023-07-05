@@ -311,10 +311,22 @@ h4 {
 }
 
 /* ------------------------------DINO TREE------------------------------ */
+/* #dino-tree-container {
+    max-width: 100%;
+    overflow-x: scroll;
+}
+#dino-svg {
+    max-width: 100%;
+    overflow-x: scroll;
+}
+#dino-tree {
+    max-width: 100%;
+} */
+
 .node-label {
     font-style: italic;
-    font-size: 10px;
-    letter-spacing: 0.2pt;
+    font-size: 11px;
+    letter-spacing: 0.3pt;
     /* font-weight: 300; */
 }
 
@@ -338,4 +350,10 @@ h4 {
     /* font-weight: 300; */
     letter-spacing: 0.25pt;
     fill: black;
+}
+
+.key {
+    letter-spacing: 0.5pt;
+    font-weight: 300;
+    font-size: 14px;
 }
