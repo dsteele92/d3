@@ -7,7 +7,7 @@
 
 body {
     max-width: 100%;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 
 body, html {
@@ -311,6 +311,31 @@ h4 {
 }
 
 /* ------------------------------DINO TREE------------------------------ */
-.node-text {
-    font-style: italic
+.node-label {
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 0.2pt;
+    /* font-weight: 300; */
+}
+
+.era-text {
+    font-size: 12px;
+    font-weight: 100;
+    letter-spacing: 1pt;
+    fill: black;
+    text-transform: capitalize;
+}
+.sub-era-text {
+    font-size: 10px;
+    font-weight: 100;
+    letter-spacing: 0.75pt;
+    fill: black;
+    text-transform: capitalize;
+}
+
+.axis-label {
+    font-size: 10px;
+    /* font-weight: 300; */
+    letter-spacing: 0.25pt;
+    fill: black;
 }
